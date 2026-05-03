@@ -35,14 +35,24 @@ This parses every PDF, prints per-file stats, and writes markdowns to `data/_par
 
 ## Evaluation
 
-Install optional dependencies including eval extras (see `pyproject.toml`), then run OmniDocBench:
+Install optional dependencies including eval extras (see `pyproject.toml`), then run OmniDocBench with optional per-sample dumps:
 
 ```bash
 uv sync --all-extras
-uv run bigos eval --benchmark=omnidocbench --subset=tables --max-samples=20
+uv run bigos eval --benchmark=omnidocbench --subset=tables \
+  --max-samples=20 --dump-dir=eval/results/dumps/tables/
+# Compare against older baselines that used text-only GT:
+# uv run bigos eval ... --gt-strategy=legacy
 ```
 
-Baseline results: see `eval/results/baseline-*.md`.
-See `docs/eval/omnidocbench.md` for caveats.
+Inspect individual samples:
+
+```bash
+cat eval/results/dumps/tables/SAMPLE_ID.json | jq .
+```
+
+Baseline results (current GT = json2md-aligned): see `eval/results/baseline-*-v3.md`.
+Older runs (legacy GT): `baseline-*-v2.md`. See `docs/eval/metrics-explained.md`,
+`docs/eval/omnidocbench.md`, and `docs/eval/json2md-reference.md`.
 
 [![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
