@@ -10,7 +10,11 @@ from urllib.parse import unquote, urlparse
 from docling.datamodel.accelerator_options import AcceleratorOptions
 from docling.datamodel.base_models import InputFormat
 from docling.datamodel.pipeline_options import PdfPipelineOptions
-from docling.document_converter import DocumentConverter, PdfFormatOption
+from docling.document_converter import (
+    DocumentConverter,
+    ImageFormatOption,
+    PdfFormatOption,
+)
 from docling_core.types.doc.document import (
     CodeItem,
     DocItem,
@@ -289,6 +293,7 @@ class DoclingBackend:
         return DocumentConverter(
             format_options={
                 InputFormat.PDF: PdfFormatOption(pipeline_options=pdf_opts),
+                InputFormat.IMAGE: ImageFormatOption(pipeline_options=pdf_opts),
             },
         )
 

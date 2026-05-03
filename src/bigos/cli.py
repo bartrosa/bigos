@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import mimetypes
 import time
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
 
@@ -81,3 +83,35 @@ def parse(
     cached_hint = cache is not None and elapsed < 0.5
     suffix = " (cached)" if cached_hint else ""
     typer.echo(f"Parsed {len(doc.blocks)} blocks in {elapsed:.2f}s{suffix}", err=True)
+
+
+@app.command("eval")
+def eval_cmd(
+    benchmark: Annotated[str, typer.Option("--benchmark", "-B")] = "omnidocbench",
+    subset: Annotated[str, typer.Option("--subset", "-s")] = "tables",
+    max_samples: Annotated[int, typer.Option("--max-samples", "-n")] = 20,
+    backend_name: Annotated[str, typer.Option("--backend", "-b")] = "docling",
+    output_dir: Annotated[Path, typer.Option("--output-dir", "-o")] = Path("eval/results"),
+) -> None:
+    if benchmark != "omnidocbench":
+        typer.echo("Only 'omnidocbench' supported in PoC", err=True)
+        raise typer.Exit(code=1)
+    if backend_name not in _BACKENDS:
+        typer.echo(f"Unknown backend: {backend_name}", err=True)
+        raise typer.Exit(code=1)
+
+    from bigos.eval.omnidocbench import evaluate, report_to_json_dict
+
+    backend = _BACKENDS[backend_name]()
+    report = asyncio.run(evaluate(backend, subset=subset, max_samples=max_samples))
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    date = datetime.now(UTC).strftime("%Y-%m-%d-%H%M")
+    md_path = output_dir / f"{date}-{benchmark}-{subset}.md"
+    md_path.write_text(report.to_markdown(), encoding="utf-8")
+    json_path = output_dir / f"{date}-{benchmark}-{subset}.json"
+    json_path.write_text(json.dumps(report_to_json_dict(report), indent=2), encoding="utf-8")
+    typer.echo(f"Wrote {md_path}")
+    typer.echo(f"Wrote {json_path}")
+    typer.echo(f"\nMean CER: {report.mean_cer}")
+    typer.echo(f"Mean TEDS (S-TEDS): {report.mean_teds}")
