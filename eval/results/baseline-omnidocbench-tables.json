@@ -1,0 +1,193 @@
+{
+  "benchmark": "omnidocbench-v1.5",
+  "backend_name": "docling",
+  "backend_version": "2.92.0",
+  "subset": "tables",
+  "n_samples": 20,
+  "results": [
+    {
+      "sample_id": "page-c7792da7-4167-4f5c-a7ca-ec0f8833f83b.png",
+      "subset": "tables",
+      "cer": 66.96,
+      "teds_avg": 0.801980198019802,
+      "formula_edit_dist": null,
+      "elapsed_s": 15.331856708042324,
+      "error": null
+    },
+    {
+      "sample_id": "page-b9d507e7-1239-42de-b70a-d7ca65393dc9.png",
+      "subset": "tables",
+      "cer": 38.725,
+      "teds_avg": 0.6279904306220095,
+      "formula_edit_dist": null,
+      "elapsed_s": 12.371425624936819,
+      "error": null
+    },
+    {
+      "sample_id": "page-9edf7687-029e-4e72-a9a6-c23faa1e1861.png",
+      "subset": "tables",
+      "cer": 56.68421052631579,
+      "teds_avg": 0.31746031746031744,
+      "formula_edit_dist": null,
+      "elapsed_s": 9.765846957918257,
+      "error": null
+    },
+    {
+      "sample_id": "page-112859dc-07d9-473a-a027-94904db8fd84.png",
+      "subset": "tables",
+      "cer": 1.749090909090909,
+      "teds_avg": 0.4375,
+      "formula_edit_dist": null,
+      "elapsed_s": 8.163569540949538,
+      "error": null
+    },
+    {
+      "sample_id": "page-3c690b07-30d7-4e77-bf20-012f0080fb1d.png",
+      "subset": "tables",
+      "cer": 50.529411764705884,
+      "teds_avg": 0.8666666666666667,
+      "formula_edit_dist": null,
+      "elapsed_s": 13.087600958067924,
+      "error": null
+    },
+    {
+      "sample_id": "page-2b4c4f44-c0de-41b6-9561-96195c233f47.png",
+      "subset": "tables",
+      "cer": 22.0625,
+      "teds_avg": 0.36111111111111116,
+      "formula_edit_dist": null,
+      "elapsed_s": 9.072255125036463,
+      "error": null
+    },
+    {
+      "sample_id": "page-73432bc8-cd0f-4e14-b119-0a9de73ab141.png",
+      "subset": "tables",
+      "cer": 24.28395061728395,
+      "teds_avg": 0.8709677419354839,
+      "formula_edit_dist": null,
+      "elapsed_s": 15.444455000106245,
+      "error": null
+    },
+    {
+      "sample_id": "page-83587fc3-fe55-4e51-a3c5-f0664edba743.png",
+      "subset": "tables",
+      "cer": 24.38157894736842,
+      "teds_avg": 0.7632183908045977,
+      "formula_edit_dist": null,
+      "elapsed_s": 22.319567458005622,
+      "error": null
+    },
+    {
+      "sample_id": "page-31fb2a53-5b32-40f6-9db1-52b357f3201f.png",
+      "subset": "tables",
+      "cer": 38.630434782608695,
+      "teds_avg": 0.7849462365591398,
+      "formula_edit_dist": null,
+      "elapsed_s": 10.729351375019178,
+      "error": null
+    },
+    {
+      "sample_id": "page-28c45f5f-7e0d-464a-89ec-8de3a4abb927.png",
+      "subset": "tables",
+      "cer": 28.52,
+      "teds_avg": 0.13636363636363635,
+      "formula_edit_dist": null,
+      "elapsed_s": 11.832008500117809,
+      "error": null
+    },
+    {
+      "sample_id": "page-9470d573-83bd-40bb-8491-534e9df043f6.png",
+      "subset": "tables",
+      "cer": 43.84615384615385,
+      "teds_avg": 0.7,
+      "formula_edit_dist": null,
+      "elapsed_s": 9.082712749950588,
+      "error": null
+    },
+    {
+      "sample_id": "page-f245e436-c16e-4d7c-8797-c473bf25880a.png",
+      "subset": "tables",
+      "cer": 28.07843137254902,
+      "teds_avg": 0.887987012987013,
+      "formula_edit_dist": null,
+      "elapsed_s": 11.67020441708155,
+      "error": null
+    },
+    {
+      "sample_id": "page-0c1be55c-0b1b-4d62-b17d-ed752f9af9f2.png",
+      "subset": "tables",
+      "cer": 33.758620689655174,
+      "teds_avg": 0.9189189189189189,
+      "formula_edit_dist": null,
+      "elapsed_s": 7.559964790940285,
+      "error": null
+    },
+    {
+      "sample_id": "page-91b20bf2-3ad5-41f4-b739-4cc4b18ab1eb.png",
+      "subset": "tables",
+      "cer": 19.879310344827587,
+      "teds_avg": 0.48484848484848486,
+      "formula_edit_dist": null,
+      "elapsed_s": 11.72030070796609,
+      "error": null
+    },
+    {
+      "sample_id": "page-423cdc11-af52-4e41-8feb-a40741b15855.png",
+      "subset": "tables",
+      "cer": 41.666666666666664,
+      "teds_avg": 0.86,
+      "formula_edit_dist": null,
+      "elapsed_s": 10.595840708119795,
+      "error": null
+    },
+    {
+      "sample_id": "page-b527edec-3363-4d38-a390-2f3a307f2392.png",
+      "subset": "tables",
+      "cer": 108.94117647058823,
+      "teds_avg": 0.7346938775510203,
+      "formula_edit_dist": null,
+      "elapsed_s": 13.297377666924149,
+      "error": null
+    },
+    {
+      "sample_id": "page-c8a4555b-2c14-40c2-b67f-097dbc77a6b7.png",
+      "subset": "tables",
+      "cer": 14.35,
+      "teds_avg": 0.5882352941176471,
+      "formula_edit_dist": null,
+      "elapsed_s": 5.848378791008145,
+      "error": null
+    },
+    {
+      "sample_id": "page-dca64e05-1ce6-49ee-857a-9b5d05a87357.png",
+      "subset": "tables",
+      "cer": 14.052884615384615,
+      "teds_avg": 0.3321917808219178,
+      "formula_edit_dist": null,
+      "elapsed_s": 22.771083292085677,
+      "error": null
+    },
+    {
+      "sample_id": "page-c9614e79-fb1f-46ef-a660-0f8de860ae30.png",
+      "subset": "tables",
+      "cer": 1.0774193548387097,
+      "teds_avg": 0.7317073170731707,
+      "formula_edit_dist": null,
+      "elapsed_s": 13.039086374919862,
+      "error": null
+    },
+    {
+      "sample_id": "page-572316a1-cdf8-4c50-81d4-2e6dc13dcdce.png",
+      "subset": "tables",
+      "cer": 5.901785714285714,
+      "teds_avg": 0.9285714285714286,
+      "formula_edit_dist": null,
+      "elapsed_s": 8.842979707987979,
+      "error": null
+    }
+  ],
+  "started_at": "2026-05-03T09:17:17.591746+00:00",
+  "finished_at": "2026-05-03T09:21:21.640984+00:00",
+  "mean_cer": 33.20393133111616,
+  "mean_teds": 0.6567679422216183
+}
