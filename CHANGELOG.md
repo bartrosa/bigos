@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- (docling) `enable_vlm` on `DoclingBackend` — `VlmPipeline` + preset `granite_docling` for formula-friendly parsing (opt-in, PR #8).
+- CLI `bigos parse --vlm` / `bigos eval --vlm` (Docling only, PR #8).
+- `docs/eval/docling-vlm-api.md` — how VLM is wired in Docling 2.92.x (PR #8).
+- OmniDocBench baseline **academic_paper v4** (`baseline-omnidocbench-academic_paper-v4.{md,json}`) with VLM; v1–v3 unchanged (PR #8).
+
+### Changed
+
+- Backend version string includes `+vlm` when VLM is enabled so disk cache keys stay disjoint from standard Docling runs (PR #8).
+
 - (eval) Per-category metric breakdown on `EvalReport` and in markdown output (PR #7b).
 - CLI `--gt-strategy` (`legacy` | `json2md`, default `json2md`) for OmniDocBench GT assembly (PR #7b).
 - `docs/eval/json2md-reference.md` — reference behaviour from official `json2md.py` (PR #7b).
