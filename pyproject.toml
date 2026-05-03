@@ -21,6 +21,14 @@ docling = [
 cache = [
     "diskcache>=5.6",
 ]
+eval = [
+    "datasets>=3.0",
+    "huggingface-hub>=0.20",
+    "jiwer>=3.0",
+    "rapidfuzz>=3.0",
+    "apted>=1.0.3",
+    "pillow>=11.0",
+]
 
 [project.scripts]
 bigos = "bigos.cli:app"
@@ -59,6 +67,10 @@ module = [
     "docling.*",
     "docling_core.*",
     "diskcache.*",
+    "apted.*",
+    "rapidfuzz.*",
+    "huggingface_hub.*",
+    "datasets.*",
 ]
 ignore_missing_imports = true
 
