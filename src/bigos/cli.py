@@ -6,7 +6,7 @@ import mimetypes
 import time
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 import typer
 
@@ -92,6 +92,14 @@ def eval_cmd(
     max_samples: Annotated[int, typer.Option("--max-samples", "-n")] = 20,
     backend_name: Annotated[str, typer.Option("--backend", "-b")] = "docling",
     output_dir: Annotated[Path, typer.Option("--output-dir", "-o")] = Path("eval/results"),
+    dump_dir: Annotated[
+        Path | None,
+        typer.Option("--dump-dir", help="Per-sample diagnostic JSON dumps."),
+    ] = None,
+    gt_strategy: Annotated[
+        Literal["legacy", "json2md"],
+        typer.Option("--gt-strategy", help="Ground-truth assembly: legacy | json2md."),
+    ] = "json2md",
 ) -> None:
     if benchmark != "omnidocbench":
         typer.echo("Only 'omnidocbench' supported in PoC", err=True)
@@ -99,11 +107,22 @@ def eval_cmd(
     if backend_name not in _BACKENDS:
         typer.echo(f"Unknown backend: {backend_name}", err=True)
         raise typer.Exit(code=1)
+    if gt_strategy not in ("legacy", "json2md"):
+        typer.echo("--gt-strategy must be 'legacy' or 'json2md'", err=True)
+        raise typer.Exit(code=1)
 
     from bigos.eval.omnidocbench import evaluate, report_to_json_dict
 
     backend = _BACKENDS[backend_name]()
-    report = asyncio.run(evaluate(backend, subset=subset, max_samples=max_samples))
+    report = asyncio.run(
+        evaluate(
+            backend,
+            subset=subset,
+            max_samples=max_samples,
+            dump_dir=dump_dir,
+            gt_strategy=gt_strategy,
+        ),
+    )
 
     output_dir.mkdir(parents=True, exist_ok=True)
     date = datetime.now(UTC).strftime("%Y-%m-%d-%H%M")
@@ -113,5 +132,8 @@ def eval_cmd(
     json_path.write_text(json.dumps(report_to_json_dict(report), indent=2), encoding="utf-8")
     typer.echo(f"Wrote {md_path}")
     typer.echo(f"Wrote {json_path}")
-    typer.echo(f"\nMean CER: {report.mean_cer}")
+    typer.echo(f"\nMean CER (raw): {report.mean_cer}")
+    typer.echo(f"Mean NED: {report.mean_ned}")
+    typer.echo(f"Mean NED (stripped MD): {report.mean_ned_normalized}")
+    typer.echo(f"Mean len(pred)/len(gt): {report.mean_len_ratio}")
     typer.echo(f"Mean TEDS (S-TEDS): {report.mean_teds}")
