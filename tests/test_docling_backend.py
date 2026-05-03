@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import re
 from pathlib import Path
 
@@ -14,6 +15,15 @@ def test_backend_metadata() -> None:
     backend = DoclingBackend()
     assert backend.name == "docling"
     assert re.match(r"^\d+\.\d+", backend.version)
+    assert backend.enable_vlm is False
+    assert "+vlm" not in backend.version
+
+
+def test_backend_vlm_flag_version() -> None:
+    vlm = DoclingBackend(enable_vlm=True)
+    assert vlm.enable_vlm is True
+    assert vlm.version.endswith("+vlm")
+    assert "+vlm" in vlm.version
 
 
 @pytest.mark.slow
@@ -88,3 +98,21 @@ async def test_export_markdown_nonempty(simple_text_pdf: Path) -> None:
     )
     doc = await backend.run(src)
     assert len(doc.export_markdown()) > 0
+
+
+@pytest.mark.slow
+def test_backend_vlm_does_not_crash_on_simple_pdf(simple_text_pdf: Path) -> None:
+    backend = DoclingBackend(enable_vlm=True)
+    src = Source(
+        uri=simple_text_pdf.as_uri(),
+        mime_type="application/pdf",
+        sha256=sha256_file(simple_text_pdf),
+    )
+    doc = asyncio.run(backend.run(src))
+    assert len(doc.blocks) > 0
+
+
+def test_cache_key_version_differs_with_vlm() -> None:
+    a = DoclingBackend()
+    b = DoclingBackend(enable_vlm=True)
+    assert a.version != b.version

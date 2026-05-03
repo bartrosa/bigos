@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import importlib.metadata
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -9,12 +10,17 @@ from urllib.parse import unquote, urlparse
 
 from docling.datamodel.accelerator_options import AcceleratorOptions
 from docling.datamodel.base_models import InputFormat
-from docling.datamodel.pipeline_options import PdfPipelineOptions
+from docling.datamodel.pipeline_options import (
+    PdfPipelineOptions,
+    VlmConvertOptions,
+    VlmPipelineOptions,
+)
 from docling.document_converter import (
     DocumentConverter,
     ImageFormatOption,
     PdfFormatOption,
 )
+from docling.pipeline.vlm_pipeline import VlmPipeline
 from docling_core.types.doc.document import (
     CodeItem,
     DocItem,
@@ -35,6 +41,11 @@ from bigos.schema import Block, Document, Source
 
 _DL_VERSION = importlib.metadata.version("docling")
 _NAME = "docling"
+
+# VLM / markup heuristics: some pipelines emit LaTeX in TextItem instead of FormulaItem.
+_LATEXISH_TEXTITEM = re.compile(
+    r"(^\s*\$\$)|(\\(?:frac|int|sum|prod|sqrt|infty|cdot|times|partial|alpha|beta|gamma|delta|left|right|bigcup|bigcap|mathbb|mathrm)\b)|(\\begin\{)",
+)
 
 
 def _device_to_accelerator_str(device: Device) -> str:
@@ -219,6 +230,22 @@ def _map_item_to_block(item: Any, d: DoclingDocument) -> Block | None:
                 return None
             return Block(kind="caption", text=text, page=page, extras={})
 
+        if label == DocItemLabel.FORMULA and text is not None:
+            return Block(
+                kind="formula",
+                text=text,
+                page=page,
+                extras={"latex": text},
+            )
+
+        if text is not None and _LATEXISH_TEXTITEM.search(text):
+            return Block(
+                kind="formula",
+                text=text,
+                page=page,
+                extras={"latex": text},
+            )
+
         if label in (
             DocItemLabel.PARAGRAPH,
             DocItemLabel.TEXT,
@@ -273,22 +300,50 @@ class DoclingBackend:
     Optional disk cache stores parsed documents keyed by file SHA-256 and backend
     version. Cached hits return a ``Document`` **without** ``raw`` (the Docling
     ``DoclingDocument`` is not JSON-serializable and is never persisted).
+
+    Set ``enable_vlm=True`` to use Docling's ``VlmPipeline`` with the
+    ``granite_docling`` preset (Granite-Docling VLM). This is slower but can emit
+    formula items / LaTeX for STEM PDFs and page images.
     """
 
     name = _NAME
-    version: str = _DL_VERSION
 
     def __init__(
         self,
         device: Device | None = None,
         cache: Cache | None = None,
+        *,
+        enable_vlm: bool = False,
     ) -> None:
         self._device: Device = device if device is not None else detect_device()
         self._converter: DocumentConverter | None = None
         self._cache: Cache | None = cache
+        self.enable_vlm = enable_vlm
+        base_ver = importlib.metadata.version("docling")
+        self.version = f"{base_ver}+vlm" if enable_vlm else base_ver
 
     def _make_converter(self) -> DocumentConverter:
         accel = AcceleratorOptions(device=_device_to_accelerator_str(self._device))
+        if self.enable_vlm:
+            vlm_opts = VlmPipelineOptions(
+                accelerator_options=accel,
+                enable_remote_services=False,
+            )
+            vlm_opts.vlm_options = VlmConvertOptions.from_preset("granite_docling")
+            pdf_fmt = PdfFormatOption(
+                pipeline_cls=VlmPipeline,
+                pipeline_options=vlm_opts,
+            )
+            img_fmt = ImageFormatOption(
+                pipeline_cls=VlmPipeline,
+                pipeline_options=vlm_opts,
+            )
+            return DocumentConverter(
+                format_options={
+                    InputFormat.PDF: pdf_fmt,
+                    InputFormat.IMAGE: img_fmt,
+                },
+            )
         pdf_opts = PdfPipelineOptions(accelerator_options=accel)
         return DocumentConverter(
             format_options={

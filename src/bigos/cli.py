@@ -51,6 +51,13 @@ def parse(
         Path,
         typer.Option("--cache-dir", help="Directory for parsed-document disk cache."),
     ] = DEFAULT_CACHE_DIR,
+    enable_vlm: Annotated[
+        bool,
+        typer.Option(
+            "--vlm/--no-vlm",
+            help="Use Granite-Docling VLM pipeline (formula-friendly; slower). Docling only.",
+        ),
+    ] = False,
 ) -> None:
     if backend_name not in _BACKENDS:
         typer.echo(f"Unknown backend: {backend_name}", err=True)
@@ -68,7 +75,11 @@ def parse(
                 "Install optional dependency: pip install 'bigos[cache]'",
                 err=True,
             )
-    backend = _BACKENDS[backend_name](cache=cache)
+    backend = (
+        _BACKENDS[backend_name](cache=cache, enable_vlm=enable_vlm)
+        if backend_name == "docling"
+        else _BACKENDS[backend_name](cache=cache)
+    )
     mime = mimetypes.guess_type(path)[0] or "application/octet-stream"
     source = Source(uri=path.as_uri(), mime_type=mime, sha256=sha256_file(path))
     t0 = time.perf_counter()
@@ -100,6 +111,13 @@ def eval_cmd(
         Literal["legacy", "json2md"],
         typer.Option("--gt-strategy", help="Ground-truth assembly: legacy | json2md."),
     ] = "json2md",
+    enable_vlm: Annotated[
+        bool,
+        typer.Option(
+            "--vlm/--no-vlm",
+            help="Granite-Docling VLM pipeline for OmniDocBench (Docling only).",
+        ),
+    ] = False,
 ) -> None:
     if benchmark != "omnidocbench":
         typer.echo("Only 'omnidocbench' supported in PoC", err=True)
@@ -113,7 +131,11 @@ def eval_cmd(
 
     from bigos.eval.omnidocbench import evaluate, report_to_json_dict
 
-    backend = _BACKENDS[backend_name]()
+    backend = (
+        _BACKENDS[backend_name](enable_vlm=enable_vlm)
+        if backend_name == "docling"
+        else _BACKENDS[backend_name]()
+    )
     report = asyncio.run(
         evaluate(
             backend,
