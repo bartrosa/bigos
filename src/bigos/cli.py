@@ -10,6 +10,7 @@ import typer
 
 from bigos._hashing import sha256_file
 from bigos.backends.docling import DoclingBackend
+from bigos.cache import DEFAULT_CACHE_DIR, DiskCache
 from bigos.schema import Source
 
 app = typer.Typer(name="bigos", help="Document ingestion for RAG pipelines.")
@@ -40,6 +41,14 @@ def parse(
         str,
         typer.Option("--backend", "-b"),
     ] = "docling",
+    no_cache: Annotated[
+        bool,
+        typer.Option("--no-cache", help="Disable disk cache for this run."),
+    ] = False,
+    cache_dir: Annotated[
+        Path,
+        typer.Option("--cache-dir", help="Directory for parsed-document disk cache."),
+    ] = DEFAULT_CACHE_DIR,
 ) -> None:
     if backend_name not in _BACKENDS:
         typer.echo(f"Unknown backend: {backend_name}", err=True)
@@ -47,7 +56,17 @@ def parse(
     if output_format not in ("md", "json"):
         typer.echo(f"Unknown format: {output_format}", err=True)
         raise typer.Exit(code=1)
-    backend = _BACKENDS[backend_name]()
+    cache = None
+    if not no_cache:
+        try:
+            cache = DiskCache(cache_dir=cache_dir)
+        except ImportError:
+            typer.echo(
+                "diskcache is not installed; parsing without cache. "
+                "Install optional dependency: pip install 'bigos[cache]'",
+                err=True,
+            )
+    backend = _BACKENDS[backend_name](cache=cache)
     mime = mimetypes.guess_type(path)[0] or "application/octet-stream"
     source = Source(uri=path.as_uri(), mime_type=mime, sha256=sha256_file(path))
     t0 = time.perf_counter()
@@ -59,4 +78,6 @@ def parse(
         typer.echo(f"Wrote {output}", err=True)
     else:
         print(text)
-    typer.echo(f"Parsed {len(doc.blocks)} blocks in {elapsed:.2f}s", err=True)
+    cached_hint = cache is not None and elapsed < 0.5
+    suffix = " (cached)" if cached_hint else ""
+    typer.echo(f"Parsed {len(doc.blocks)} blocks in {elapsed:.2f}s{suffix}", err=True)

@@ -26,6 +26,7 @@ from docling_core.types.doc.document import (
 from docling_core.types.doc.labels import DocItemLabel
 
 from bigos._device import Device, detect_device
+from bigos.cache import Cache, make_cache_key
 from bigos.schema import Block, Document, Source
 
 _DL_VERSION = importlib.metadata.version("docling")
@@ -263,14 +264,24 @@ def _map_docling_to_bigos(d: DoclingDocument, source: Source) -> Document:
 
 
 class DoclingBackend:
-    """Wraps Docling `DocumentConverter` and maps output to `bigos.Document`."""
+    """Wraps Docling `DocumentConverter` and maps output to `bigos.Document`.
+
+    Optional disk cache stores parsed documents keyed by file SHA-256 and backend
+    version. Cached hits return a ``Document`` **without** ``raw`` (the Docling
+    ``DoclingDocument`` is not JSON-serializable and is never persisted).
+    """
 
     name = _NAME
     version: str = _DL_VERSION
 
-    def __init__(self, device: Device | None = None) -> None:
+    def __init__(
+        self,
+        device: Device | None = None,
+        cache: Cache | None = None,
+    ) -> None:
         self._device: Device = device if device is not None else detect_device()
         self._converter: DocumentConverter | None = None
+        self._cache: Cache | None = cache
 
     def _make_converter(self) -> DocumentConverter:
         accel = AcceleratorOptions(device=_device_to_accelerator_str(self._device))
@@ -282,6 +293,14 @@ class DoclingBackend:
         )
 
     async def run(self, source: Source) -> Document:
+        cache = self._cache
+        cache_key: str | None = None
+        if cache is not None:
+            cache_key = make_cache_key(source.sha256, self.name, self.version)
+            cached = cache.get(cache_key)
+            if cached is not None:
+                return cached
+
         path = uri_to_path(source.uri)
         if self._converter is None:
             self._converter = self._make_converter()
@@ -294,4 +313,7 @@ class DoclingBackend:
         conv = await asyncio.to_thread(_convert)
         d = conv.document
         doc = _map_docling_to_bigos(d, source)
-        return doc.model_copy(update={"raw": d})
+        out = doc.model_copy(update={"raw": d})
+        if cache is not None and cache_key is not None:
+            cache.set(cache_key, out)
+        return out
