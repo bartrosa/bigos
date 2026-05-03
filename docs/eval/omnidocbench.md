@@ -100,5 +100,7 @@ Compare `pred_preview` and `gt_preview`; check `ned` vs `ned_normalized`.
 - v2 (NED + diagnostics, **legacy GT**): `eval/results/baseline-omnidocbench-*-v2.md`.
 - v3 (**json2md-aligned GT**, current): `eval/results/baseline-omnidocbench-*-v3.md`
   (and `.json`). Comparison v2→v3: `eval/results/comparison-v2-vs-v3.md`.
+- v4 (**academic_paper only**, Docling `enable_vlm=True`): `baseline-omnidocbench-academic_paper-v4.{md,json}`.
+  Porównanie z v3: `eval/results/comparison-v3-vs-v4-academic.md`.
 
-See also `docs/eval/metrics-explained.md` and `docs/eval/json2md-reference.md`.
+See also `docs/eval/metrics-explained.md`, `docs/eval/json2md-reference.md`, and `docs/eval/docling-vlm-api.md`.
