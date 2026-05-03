@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DiskCache for parsed Documents (PR #4)
 - CLI flags --no-cache, --cache-dir (PR #4)
 - scripts/sanity_check.py for batch testing on user docs (PR #4)
+- Eval harness: char_error_rate, teds (S-TEDS), edit_distance metrics (PR #5)
+- OmniDocBench v1.5 integration via HuggingFace dataset repo + manifest JSON (PR #5)
+- CLI: `bigos eval --benchmark=omnidocbench` (PR #5)
+- Baseline results for `tables` and `academic_paper` subsets (PR #5)
 
 ## [0.0.1.dev0] - 2026-05-03
 
