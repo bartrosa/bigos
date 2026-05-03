@@ -1,0 +1,193 @@
+{
+  "benchmark": "omnidocbench-v1.5",
+  "backend_name": "docling",
+  "backend_version": "2.92.0",
+  "subset": "academic_paper",
+  "n_samples": 20,
+  "results": [
+    {
+      "sample_id": "page-bd6eb36e-0856-4d9d-b587-21b4a0209c8b.png",
+      "subset": "academic_paper",
+      "cer": 15.638297872340425,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 15.945308791007847,
+      "error": null
+    },
+    {
+      "sample_id": "page-f9583127-1277-4424-be9d-35430e0aedd6.png",
+      "subset": "academic_paper",
+      "cer": 43.24096385542169,
+      "teds_avg": 0.9148936170212766,
+      "formula_edit_dist": null,
+      "elapsed_s": 14.464194250060245,
+      "error": null
+    },
+    {
+      "sample_id": "page-c1c135ad-427e-482b-b01c-05c0ccbc6e76.png",
+      "subset": "academic_paper",
+      "cer": 0.3940077319587629,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 16.30097179207951,
+      "error": null
+    },
+    {
+      "sample_id": "page-9477c155-19b3-4f2d-ac18-ee3f8997d2f8.png",
+      "subset": "academic_paper",
+      "cer": 45.52173913043478,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 8.757245125016198,
+      "error": null
+    },
+    {
+      "sample_id": "page-cdb92c2f-f43f-45ef-ace7-91d4664a7834.png",
+      "subset": "academic_paper",
+      "cer": 44.0,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 8.421944207977504,
+      "error": null
+    },
+    {
+      "sample_id": "page-1ce383cc-63a3-43c9-b6f2-7498a952b65c.png",
+      "subset": "academic_paper",
+      "cer": 0.6227167054134839,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 9.28816229198128,
+      "error": null
+    },
+    {
+      "sample_id": "page-a6d06208-475c-4c6e-9d84-858f7e2ecf72.png",
+      "subset": "academic_paper",
+      "cer": 0.5768101761252447,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 8.443956124829128,
+      "error": null
+    },
+    {
+      "sample_id": "page-e721a819-6dbf-453a-a7ad-857c24f9aa3e.png",
+      "subset": "academic_paper",
+      "cer": 96.16666666666667,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 10.404161375015974,
+      "error": null
+    },
+    {
+      "sample_id": "page-e4053f20-e6e6-430e-83ef-db298a3199aa.png",
+      "subset": "academic_paper",
+      "cer": 0.42670157068062825,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 8.25546966609545,
+      "error": null
+    },
+    {
+      "sample_id": "page-60d560a3-cd92-4b7d-b6c5-f0d6ce6dc3f1.png",
+      "subset": "academic_paper",
+      "cer": 93.92857142857143,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 12.698491374962032,
+      "error": null
+    },
+    {
+      "sample_id": "page-f108020f-edc5-4a27-85d9-d9d9c5d67309.png",
+      "subset": "academic_paper",
+      "cer": 0.30699177438307873,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 13.450286875013262,
+      "error": null
+    },
+    {
+      "sample_id": "page-dc728bd5-50a9-41e8-9e5a-d4b01e6664a2.png",
+      "subset": "academic_paper",
+      "cer": 13.764705882352942,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 9.83639237517491,
+      "error": null
+    },
+    {
+      "sample_id": "page-47977c29-59ca-4534-9a00-becad3bfdaa4.png",
+      "subset": "academic_paper",
+      "cer": 2.849056603773585,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 7.078389332862571,
+      "error": null
+    },
+    {
+      "sample_id": "page-87c18f88-ea2f-4044-b092-02e9b2a7436d.png",
+      "subset": "academic_paper",
+      "cer": 6.713178294573644,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 10.419990833848715,
+      "error": null
+    },
+    {
+      "sample_id": "page-7050793e-109f-4066-be91-107f94b617b9.png",
+      "subset": "academic_paper",
+      "cer": 33.40425531914894,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 11.80114845908247,
+      "error": null
+    },
+    {
+      "sample_id": "page-c6168ed8-ca6a-4ddd-8bfc-92dec77f1870.png",
+      "subset": "academic_paper",
+      "cer": 0.1059190031152648,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 6.950970416888595,
+      "error": null
+    },
+    {
+      "sample_id": "page-e9e8bc8e-e22d-4d1a-a3fb-5d175e5e4d70.png",
+      "subset": "academic_paper",
+      "cer": 0.3862745098039216,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 7.298520667012781,
+      "error": null
+    },
+    {
+      "sample_id": "page-85377cdf-d6a2-4611-bd50-08795bf7acb6.png",
+      "subset": "academic_paper",
+      "cer": 0.2205240174672489,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 9.213213624898344,
+      "error": null
+    },
+    {
+      "sample_id": "page-d2816bbe-3c28-4905-ad6d-5f873b525de3.png",
+      "subset": "academic_paper",
+      "cer": 0.16583747927031509,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 10.220327917020768,
+      "error": null
+    },
+    {
+      "sample_id": "page-7a7566fd-43d8-46e4-8a4f-0330e1f27a88.png",
+      "subset": "academic_paper",
+      "cer": 0.4750254841997961,
+      "teds_avg": null,
+      "formula_edit_dist": null,
+      "elapsed_s": 8.975623541977257,
+      "error": null
+    }
+  ],
+  "started_at": "2026-05-03T09:21:28.137748+00:00",
+  "finished_at": "2026-05-03T09:24:56.819130+00:00",
+  "mean_cer": 19.945412175285092,
+  "mean_teds": 0.9148936170212766
+}
