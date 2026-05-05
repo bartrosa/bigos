@@ -81,7 +81,8 @@ def parse(
         else _BACKENDS[backend_name](cache=cache)
     )
     mime = mimetypes.guess_type(path)[0] or "application/octet-stream"
-    source = Source(uri=path.as_uri(), mime_type=mime, sha256=sha256_file(path))
+    abs_path = path.resolve()
+    source = Source(uri=abs_path.as_uri(), mime_type=mime, sha256=sha256_file(abs_path))
     t0 = time.perf_counter()
     doc = asyncio.run(backend.run(source))
     elapsed = time.perf_counter() - t0

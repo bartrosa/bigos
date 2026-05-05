@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pytest
@@ -29,6 +30,49 @@ def test_cli_unknown_format(tmp_path: Path) -> None:
     result = runner.invoke(app, ["parse", str(pdf), "--format=xml"])
     assert result.exit_code == 1
     assert "Unknown format" in result.stderr
+
+
+def test_cli_relative_path_does_not_crash_with_value_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Regression: ``bigos parse some/relative.pdf`` previously raised
+    ``ValueError: relative path can't be expressed as a file URI`` because the
+    CLI passed a non-resolved Path straight to ``Path.as_uri()``."""
+    from bigos import cli as cli_mod
+    from bigos.schema import Block, Document, Source
+
+    pdf = _minimal_pdf(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    rel = Path(pdf.name)
+    assert not rel.is_absolute()
+
+    captured: dict[str, Source] = {}
+
+    class _StubBackend:
+        name = "stub"
+        version = "0"
+
+        def __init__(self, *args: object, **kwargs: object) -> None:
+            pass
+
+        async def run(self, source: Source) -> Document:
+            captured["source"] = source
+            return Document(
+                source=source, blocks=[Block(kind="paragraph", text="ok")]
+            )
+
+    monkeypatch.setitem(cli_mod._BACKENDS, "stub", _StubBackend)  # type: ignore[arg-type]
+
+    result = runner.invoke(
+        app,
+        ["parse", str(rel), "--no-cache", "--backend=stub", "--format=md"],
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 0
+    assert "ok" in result.stdout
+    src = captured["source"]
+    assert src.uri.startswith("file://")
+    assert os.path.isabs(src.uri.removeprefix("file://"))
 
 
 @pytest.mark.slow
