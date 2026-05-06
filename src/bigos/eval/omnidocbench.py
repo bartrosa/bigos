@@ -113,7 +113,11 @@ def _merge_truncated_json2md(
         return sorted(annos, key=lambda x: int(x.get("order") or 0))
     relations = extra.get("relation")
     if not isinstance(relations, list):
-        return annos
+        # Reference ``tools/json2md.py`` always sorts by ``order`` after the
+        # truncated merge step. When ``extra`` is present but has no usable
+        # ``relation`` list, fall through to the no-op sort path so the GT
+        # markdown still reflects reading order rather than manifest order.
+        return sorted(annos, key=lambda x: int(x.get("order") or 0))
 
     truncated_all: dict[str, dict[str, Any]] = {}
     related_truncated: list[list[str]] = []
