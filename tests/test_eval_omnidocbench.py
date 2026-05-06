@@ -180,6 +180,45 @@ def test_gt_markdown_for_eval_prefers_explicit_fields() -> None:
     assert _gt_markdown_for_eval(row, "json2md") == "FROM_ROW"
 
 
+def test_extra_without_relation_still_sorts_by_order() -> None:
+    """Regression: if ``row['extra']`` is a dict without a usable ``relation``
+    list (e.g. only other keys, or ``relation`` set to ``None``), the json2md
+    GT must still sort blocks by ``order``. Previously this branch returned
+    annos in manifest order, breaking GT reading order and skewing CER/NED."""
+    row_no_relation_key = {
+        "page_info": {"image_path": "p.png"},
+        "layout_dets": [
+            {"category_type": "text_block", "text": "second", "order": 2},
+            {"category_type": "text_block", "text": "first", "order": 1},
+        ],
+        "extra": {"unrelated_key": "x"},
+    }
+    gt = gt_markdown_json2md(row_no_relation_key)
+    assert gt.index("first") < gt.index("second")
+
+    row_relation_none = {
+        "page_info": {"image_path": "p.png"},
+        "layout_dets": [
+            {"category_type": "text_block", "text": "second", "order": 2},
+            {"category_type": "text_block", "text": "first", "order": 1},
+        ],
+        "extra": {"relation": None},
+    }
+    gt2 = gt_markdown_json2md(row_relation_none)
+    assert gt2.index("first") < gt2.index("second")
+
+    row_relation_dict = {
+        "page_info": {"image_path": "p.png"},
+        "layout_dets": [
+            {"category_type": "text_block", "text": "second", "order": 2},
+            {"category_type": "text_block", "text": "first", "order": 1},
+        ],
+        "extra": {"relation": {"not": "a list"}},
+    }
+    gt3 = gt_markdown_json2md(row_relation_dict)
+    assert gt3.index("first") < gt3.index("second")
+
+
 def test_truncated_merge_joins_text() -> None:
     row = {
         "page_info": {"image_path": "p.png"},
