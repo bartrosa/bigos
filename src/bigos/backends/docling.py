@@ -65,6 +65,13 @@ def uri_to_path(uri: str) -> Path:
 
 
 def _page_1_indexed_from_item(item: Any) -> int | None:
+    """Return the (1-indexed) page number of a DocItem, or None if unknown.
+
+    Docling's ``ProvenanceItem.page_no`` is already 1-indexed: it matches the
+    keys of ``DoclingDocument.pages`` (e.g. ``doc.pages[prov.page_no]``), so we
+    must NOT add +1 on top — doing so would shift every block's ``page`` by one
+    and cause RAG citations to point at the wrong page.
+    """
     prov = getattr(item, "prov", None) or []
     if not prov:
         return None
@@ -76,7 +83,9 @@ def _page_1_indexed_from_item(item: Any) -> int | None:
         n = int(page_no)
     except (TypeError, ValueError):
         return None
-    return n + 1
+    if n < 1:
+        return None
+    return n
 
 
 def _safe_model_dict(obj: Any) -> Any:

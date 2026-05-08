@@ -116,3 +116,42 @@ def test_cache_key_version_differs_with_vlm() -> None:
     a = DoclingBackend()
     b = DoclingBackend(enable_vlm=True)
     assert a.version != b.version
+
+
+def test_page_helper_passes_through_1_indexed() -> None:
+    """Docling's ProvenanceItem.page_no is already 1-indexed (matches DoclingDocument.pages).
+
+    Regression test for an off-by-one where the helper added +1 on top, causing
+    every block to report its page one higher than the true page number — which
+    would point RAG citations at the wrong page (or off the end of the document).
+    """
+    from types import SimpleNamespace
+
+    from bigos.backends.docling import _page_1_indexed_from_item
+
+    item = SimpleNamespace(prov=[SimpleNamespace(page_no=1)])
+    assert _page_1_indexed_from_item(item) == 1
+
+    item5 = SimpleNamespace(prov=[SimpleNamespace(page_no=5)])
+    assert _page_1_indexed_from_item(item5) == 5
+
+    no_prov = SimpleNamespace(prov=[])
+    assert _page_1_indexed_from_item(no_prov) is None
+
+    bad_value = SimpleNamespace(prov=[SimpleNamespace(page_no="not-a-number")])
+    assert _page_1_indexed_from_item(bad_value) is None
+
+
+@pytest.mark.slow
+async def test_parse_simple_text_page_number_is_one(simple_text_pdf: Path) -> None:
+    """Single-page PDF must report ``page=1`` for its blocks (not 2)."""
+    backend = DoclingBackend()
+    src = Source(
+        uri=simple_text_pdf.as_uri(),
+        mime_type="application/pdf",
+        sha256=sha256_file(simple_text_pdf),
+    )
+    doc = await backend.run(src)
+    page_values = {b.page for b in doc.blocks if b.page is not None}
+    assert page_values, "expected at least one block with a page number"
+    assert page_values == {1}, f"expected all blocks on page 1, got {sorted(page_values)}"
