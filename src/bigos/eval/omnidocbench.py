@@ -685,8 +685,16 @@ async def evaluate(
         if not image_rel:
             continue
 
+        # ``page_no`` is the page number *within* a source PDF (1, 2, 3, ...) and
+        # is NOT unique across manifest rows: every multi-page document starts at
+        # page 1, so picking ``page_no`` first means every "first page" sample
+        # collapses to ``sample_id == "1"``. Per-sample dump JSON files written to
+        # ``dump_dir/{sample_id}.json`` then silently overwrite each other.
+        # ``image_rel`` (the per-page image filename, e.g.
+        # ``paper_2401.05459_page_001.png``) is unique per row and carries both
+        # document and page info, so prefer it.
         sample_id = str(
-            page_info.get("page_no") or row.get("page_id") or image_rel or f"row_{idx}",
+            row.get("page_id") or image_rel or page_info.get("page_no") or f"row_{idx}",
         )
         result = SampleResult(sample_id=sample_id, subset=subset)
 

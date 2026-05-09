@@ -196,6 +196,66 @@ def test_truncated_merge_joins_text() -> None:
     assert "hello" in gt_markdown_json2md(row)
 
 
+def test_dump_dir_writes_one_file_per_sample(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Regression: rows that share ``page_no`` must not collapse to one dump file.
+
+    OmniDocBench's ``page_info.page_no`` is the page number within a source PDF
+    (1, 2, 3, ...) and repeats across documents. If ``sample_id`` falls back to
+    ``page_no`` first, every PDF's "page 1" sample writes to the same
+    ``dump_dir/1.json`` and silently overwrites all earlier dumps.
+    """
+    png_bytes = (
+        b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01"
+        b"\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc```\x00"
+        b"\x00\x00\x04\x00\x01\x0c\x8c\x10\x0c\x00\x00\x00\x00IEND\xaeB`\x82"
+    )
+
+    manifest = [
+        {
+            "page_info": {
+                "page_no": 1,
+                "page_attribute": {"subset": "table_hard"},
+                "image_path": f"doc{i}_page1.png",
+            },
+            "layout_dets": [],
+        }
+        for i in range(5)
+    ]
+
+    def fake_hub_download(
+        repo_id: str,
+        filename: str,
+        repo_type: str | None = None,
+    ) -> str:
+        if filename == omni._MANIFEST_NAME:
+            p = tmp_path / omni._MANIFEST_NAME
+            p.write_text(json.dumps(manifest), encoding="utf-8")
+            return str(p)
+        if filename.startswith("images/"):
+            stem = Path(filename).stem
+            f = tmp_path / f"{stem}.png"
+            # Vary file content so each image hashes uniquely (defensive).
+            f.write_bytes(png_bytes + stem.encode())
+            return str(f)
+        raise AssertionError(f"unexpected filename: {filename}")
+
+    monkeypatch.setattr(omni, "hf_hub_download", fake_hub_download)
+
+    dump_dir = tmp_path / "dump"
+    report = asyncio.run(
+        omni.evaluate(_MockBackend(), subset="tables", max_samples=10, dump_dir=dump_dir),
+    )
+
+    assert report.n_samples == 5
+    sample_ids = [r.sample_id for r in report.results]
+    assert len(set(sample_ids)) == 5, f"sample_ids collide: {sample_ids}"
+    dump_files = sorted(p.name for p in dump_dir.iterdir())
+    assert len(dump_files) == 5, f"dump files lost to overwrite: {dump_files}"
+
+
 def test_eval_report_to_markdown_and_json_dict() -> None:
     r = SampleResult(
         sample_id="p1",
